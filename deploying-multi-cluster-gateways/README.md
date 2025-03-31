@@ -26,8 +26,10 @@ terraform init
 terraform plan
 terraform apply 
 
-# get some coffee, possibly re-apply, you might get an error but they're generally
-# transient because resource ordering. just reapply and it should work.
+# get some coffee, and know a re-apply might be required because resource 
+# ordering and dependancies. we've tried to account for this, but if 
+# terraform errors out, it's worth just re-applying. if that's the case, 
+# please consider filing an issue and/or pinging linde@.
 
 ```
 
@@ -50,4 +52,14 @@ export VIP=$(kubectl get gateway -n store external-http -ojson | jq .status.addr
 curl -s -H "host: store.example.com" http://${VIP} | jq .
 curl -s -H "host: store.example.com" http://${VIP}/worker{0,1} | jq . 
 
+# if for any reason you want to get access to a worker, do the following replacing 0 with 1 as helpful
+
+WORKER_NAME=$(echo local.mcg_0.name  | terraform console | tr -d '"')
+WORKER_LOC=$(echo var.worker_locations[0]  | terraform console | tr -d '"')
+gcloud container clusters get-credentials --project=${HUB_PROJ} --location=${WORKER_LOC} ${WORKER_NAME}
+
 ```
+
+# TODO ordering issues
+
+> Error: unable to build kubernetes objects from release manifest: [resource mapping not found for name: "store" namespace: "store" from "": no matches for kind "ServiceExport" in version "net.gke.io/v1"
