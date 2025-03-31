@@ -1,0 +1,13 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "properties": {
+      "service0": {
+        "description": "Name of the first service using zero index. Used in a service export, should map to location with index of 0",
+        "type": "string"
+      },
+      "service1": {
+        "description": "Name of the other service. Used in a service export, should map to location with index of 1",
+        "type": "string"
+      }
+  }
+}

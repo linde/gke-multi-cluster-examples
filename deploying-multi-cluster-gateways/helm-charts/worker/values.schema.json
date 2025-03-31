@@ -1,0 +1,9 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "properties": {
+      "cluster": {
+        "description": "Name of the cluster, used in the Service and ServiceExport for this particular cluster instance. Value Should match the hub charts value for either service0 or service1.",
+        "type": "string"
+      }
+  }
+}
