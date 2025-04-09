@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "properties": { 
+    "git": {
+      "description": "Values for the git repo the hub should sync.",
+      "properties": {
+        "repo": { "type": "string" },
+        "path": { "type": "string", "default": "./" }
+      }
+    }
+  }
+}
