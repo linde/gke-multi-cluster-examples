@@ -33,6 +33,12 @@ resource "google_container_cluster" "hub" {
   location = var.hub_location
   name     = "hub-${random_id.rand.hex}"
 
+  resource_labels = {
+    // this will designate this cluster as a hub and it will get 
+    // cluster profile resources synced to it for all fleet clusters.
+    "fleet-clusterinventory-management-cluster" = "true"
+  }
+
   enable_autopilot = true
 
   cluster_autoscaling {

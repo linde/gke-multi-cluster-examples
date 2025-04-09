@@ -9,6 +9,8 @@ resource "google_service_account" "hub" {
   display_name = "${var.cluster_prefix} hub cluster service account"
 }
 
+
+// cluster GCP Service Account permissions
 resource "google_project_iam_member" "hub_gsa" {
 
   for_each = toset([
@@ -21,3 +23,7 @@ resource "google_project_iam_member" "hub_gsa" {
   role    = each.value
   member  = "serviceAccount:${google_service_account.hub.email}"
 }
+
+
+
+

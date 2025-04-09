@@ -1,4 +1,4 @@
 apiVersion: v2
 name: hub
-version: 0.0.3
+version: 0.0.5
 type: application
