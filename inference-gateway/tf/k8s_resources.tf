@@ -36,11 +36,6 @@ resource "helm_release" "inference_workload" {
   name  = "inference-workload"
   chart = "${var.helm_chart_root}/inference-workload"
 
-  set {
-    name = "hf_token"
-    value = var.hf_token
-  }
-
   wait = false
 
   depends_on = [ helm_release.inference_crds, helm_release.inferencepool ]

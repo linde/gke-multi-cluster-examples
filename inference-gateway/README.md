@@ -4,7 +4,7 @@
 
 I was working from [Serve an LLM with GKE Inference Gateway](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway), but modified it some because i didnt want to consume the large GPU instances required to run with the original model and lora fine tuning.
 
-I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on just CPUs.
+I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on smaller instances with lower memory requirements.
 
 
 ## Setup

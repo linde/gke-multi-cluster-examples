@@ -34,8 +34,3 @@ variable "cluster_min_master_version" {
   type    = string
   default = "1.32.3-gke.1170000"
 }
-
-variable "hf_token" {
-  type = string
-  sensitive = true
-}
