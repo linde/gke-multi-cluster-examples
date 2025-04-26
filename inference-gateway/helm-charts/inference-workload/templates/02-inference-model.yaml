@@ -17,7 +17,7 @@ kind: InferenceModel
 metadata:
   name: llama3-base-model
 spec:
-  modelName: meta-llama/Llama-3.1-8B-Instruct
+  modelName: TinyLlama/TinyLlama-1.1B-Chat-v1.0
   criticality: Critical
   poolRef:
     name: vllm-llama3-8b-instruct

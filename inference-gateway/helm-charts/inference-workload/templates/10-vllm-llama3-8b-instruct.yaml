@@ -17,18 +17,17 @@ spec:
           image: "vllm/vllm-openai:latest"
           imagePullPolicy: Always
           command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
-          args:
-          - "--model"
-          - "meta-llama/Llama-3.1-8B-Instruct"
-          - "--tensor-parallel-size"
-          - "1"
-          - "--port"
-          - "8000"
-          - "--enable-lora"
-          - "--max-loras"
-          - "2"
-          - "--max-cpu-loras"
-          - "12"
+          args: [
+            "--model", "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+            "--tensor-parallel-size", "1",
+            "--port", "8000",
+            # "--enable-lora",
+            # "--max-loras", "2",
+            # "--max-cpu-loras", "12",
+            "--max-model-len", "2000",
+            "--gpu-memory-utilization", "0.95",
+            "--swap-space", "32.0",
+          ]
           env:
             # Enabling LoRA support temporarily disables automatic v1, we want to force it on
             # until 0.8.3 vLLM is released.
@@ -43,6 +42,8 @@ spec:
                   key: token
             - name: VLLM_ALLOW_RUNTIME_LORA_UPDATING
               value: "true"
+            - name: PYTORCH_CUDA_ALLOC_CONF
+              value: "expandable_segments:True"
           ports:
             - containerPort: 8000
               name: http
@@ -70,7 +71,8 @@ spec:
                 #
                 # If this value is updated, be sure to update terminationGracePeriodSeconds.
                 #
-                seconds: 30
+                seconds: 24
+                # edited because of: │ Error: failed to create resource: Deployment.apps "vllm-llama3-8b-instruct" is invalid: spec.template.spec.containers[0].lifecycle.preStop.sleep: Invalid value: 30: must be greater than 0 and less than terminationGracePeriodSeconds (25). Enable AllowPodLifecycleSleepActionZeroValue feature gate for zero sleep.                
               #
               # IMPORTANT: preStop.sleep is beta as of Kubernetes 1.30 - for older versions
               # replace with this exec action.
@@ -139,6 +141,7 @@ spec:
               nvidia.com/gpu: 1
             requests:
               nvidia.com/gpu: 1
+              memory: "64Gi"
           volumeMounts:
             - mountPath: /data
               name: data
@@ -146,19 +149,19 @@ spec:
               name: shm
             - name: adapters
               mountPath: "/adapters"
-      initContainers:
-        - name: lora-adapter-syncer
-          tty: true
-          stdin: true
-          image: us-central1-docker.pkg.dev/k8s-staging-images/gateway-api-inference-extension/lora-syncer:main
-          restartPolicy: Always
-          imagePullPolicy: Always
-          env:
-            - name: DYNAMIC_LORA_ROLLOUT_CONFIG
-              value: "/config/configmap.yaml"
-          volumeMounts: # DO NOT USE subPath, dynamic configmap updates don't work on subPaths
-          - name: config-volume
-            mountPath:  /config
+      # initContainers:
+      #   - name: lora-adapter-syncer
+      #     tty: true
+      #     stdin: true
+      #     image: us-central1-docker.pkg.dev/k8s-staging-images/gateway-api-inference-extension/lora-syncer:main
+      #     restartPolicy: Always
+      #     imagePullPolicy: Always
+      #     env:
+      #       - name: DYNAMIC_LORA_ROLLOUT_CONFIG
+      #         value: "/config/configmap.yaml"
+      #     volumeMounts: # DO NOT USE subPath, dynamic configmap updates don't work on subPaths
+      #     - name: config-volume
+      #       mountPath:  /config
       restartPolicy: Always
 
       # vLLM allows VLLM_PORT to be specified as an environment variable, but a user might
@@ -225,7 +228,8 @@ spec:
       # time to drain queued requests.
       terminationGracePeriodSeconds: 130
       nodeSelector:
-        cloud.google.com/gke-accelerator: "nvidia-h100-80gb"
+        cloud.google.com/gke-spot: "true"
+        cloud.google.com/gke-accelerator: "nvidia-l4"
       volumes:
         - name: data
           emptyDir: {}
@@ -234,26 +238,26 @@ spec:
             medium: Memory
         - name: adapters
           emptyDir: {}
-        - name: config-volume
-          configMap:
-            name: vllm-llama3-8b-adapters
+        # - name: config-volume
+        #   configMap:
+        #     name: vllm-llama3-8b-adapters
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vllm-llama3-8b-adapters
-data:
-  configmap.yaml: |
-      vLLMLoRAConfig:
-        name: vllm-llama3.1-8b-instruct
-        port: 8000
-        defaultBaseModel: meta-llama/Llama-3.1-8B-Instruct
-        ensureExist:
-          models:
-          - id: food-review
-            source: Kawon/llama3.1-food-finetune_v14_r8
-          - id: cad-fabricator
-            source: redcathode/fabricator
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: vllm-llama3-8b-adapters
+# data:
+#   configmap.yaml: |
+#       vLLMLoRAConfig:
+#         name: vllm-llama3.1-8b-instruct
+#         port: 8000
+#         defaultBaseModel: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+#         ensureExist:
+#           models:
+#           - id: food-review
+#             source: Kawon/llama3.1-food-finetune_v14_r8
+#           - id: cad-fabricator
+#             source: redcathode/fabricator
 ---
 kind: HealthCheckPolicy
 apiVersion: networking.gke.io/v1

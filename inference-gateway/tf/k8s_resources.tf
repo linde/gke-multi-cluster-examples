@@ -20,7 +20,8 @@ resource "helm_release" "inferencepool" {
 
   set {
     name = "inferencePool.modelServers.matchLabels.app"
-    value = "vllm-llama3-8b-instruct"
+    # value = "vllm-llama3-8b-instruct"
+    value = ""
   }
 
   set {
