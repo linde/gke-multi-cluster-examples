@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hf-token
+type: Opaque
+data:
+  token: {{ .Values.hf_token | b64enc | quote }}

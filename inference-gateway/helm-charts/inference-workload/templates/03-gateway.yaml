@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: inference-gateway
+spec:
+  gatewayClassName: gke-l7-regional-external-managed
+  listeners:
+    - protocol: HTTP # Or HTTPS for production
+      port: 80 # Or 443 for HTTPS
+      name: http
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ig-route
+spec:
+  parentRefs:
+  - name: inference-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /serve
+    backendRefs:
+    - name: vllm-llama3-8b-instruct
+      group: inference.networking.x-k8s.io
+      kind: InferencePool
+---
