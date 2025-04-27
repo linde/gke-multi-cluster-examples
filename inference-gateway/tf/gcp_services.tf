@@ -13,11 +13,10 @@ resource "google_project_service" "services" {
     "multiclusterservicediscovery.googleapis.com",
     "multiclusteringress.googleapis.com",
     "gkehub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "networkservices.googleapis.com",
-
-    "connectgateway.googleapis.com",
     "monitoring.googleapis.com",
+
+    "networkservices.googleapis.com",  # we need this but might not need
+    "servicenetworking.googleapis.com",
 
   ])
   service            = each.value

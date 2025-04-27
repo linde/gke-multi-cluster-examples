@@ -38,7 +38,7 @@ terraform plan
 terraform apply 
 ```
 
-# Verification
+# Verification of the workload
 
 
 ```bash
@@ -50,9 +50,8 @@ MODEL=$(echo var.model  | terraform console | tr -d '"')
 
 gcloud container clusters get-credentials --project=${WORKER_PROJ} --location=${WORKER_LOC} ${WORKER_NAME}
 
-
 # wait quite a little while for things to get ready
-kubectl wait --for=jsonpath='.status.conditions[].type=Available' deployments/${APP}
+kubectl wait deployments/${APP} --for=jsonpath='{.status.readyReplicas}' --timeout=10m
 
 kubectl port-forward deployments/${APP} 8000 &
 
@@ -66,7 +65,25 @@ curl -X POST "http://localhost:8000/v1/completions" \
 	}
 EOF
 
+# fg and ctrl-c the kubectl port-forward
 	
-	
-	
+```
+
+# Verification of the Inference Gateway itself
+
+
+```bash
+
+IP=$(kubectl get gateway/${APP} -o jsonpath='{.status.addresses[0].value}')
+
+curl -i -X POST "http://${IP}/v1/completions" \
+	-H "Content-Type: application/json" --data @- <<EOF
+	{
+		"model": "${MODEL}",
+		"prompt": "Once upon a time, there",
+		"max_tokens": 512,
+		"temperature": 0.5
+	}
+EOF
+
 ```

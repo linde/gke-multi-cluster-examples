@@ -83,18 +83,19 @@ spec:
         - name: adapters
           emptyDir: {}
 ---
-# kind: HealthCheckPolicy
-# apiVersion: networking.gke.io/v1
-# metadata:
-#   name: {{ .Values.app }}-policy
-# spec:
-#   targetRef:
-#     group: inference.networking.x-k8s.io
-#     kind: InferencePool
-#     name: {{ .Values.app }}
-#   default:
-#     config:
-#       type: HTTP
-#       httpHealthCheck:
-#         requestPath: /health
-#         port: 8000
+kind: HealthCheckPolicy
+apiVersion: networking.gke.io/v1
+metadata:
+  name: {{ .Values.app }}-policy
+spec:
+  targetRef:
+    group: inference.networking.x-k8s.io
+    kind: InferencePool
+    name: {{ .Values.app }}
+  default:
+    config:
+      type: HTTP
+      httpHealthCheck:
+        requestPath: /health
+        port: 8000
+---
