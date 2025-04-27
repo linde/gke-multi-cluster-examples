@@ -2,9 +2,7 @@
 
 # Deploying Inference Gateway (in terraform)
 
-I was working from [Serve an LLM with GKE Inference Gateway](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway), but modified it some because i didnt want to consume the large GPU instances required to run with the original model and lora fine tuning.
-
-I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on smaller instances with lower memory requirements.
+I was working from [Serve an LLM with GKE Inference Gateway](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway), but modified it some because i didnt want to consume the large GPU instances required to run with the original model and LoRA fine tuning. So, I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on smaller instances with lower memory requirements. The result is equivalent to the original tutorial, minus only the [LoRA adaptors](https://cloud.google.com/kubernetes-engine/docs/how-to/deploy-gke-inference-gateway#specify-model-objectives) and model routing based on it (ie based model and lora fine tuned models, respectively).
 
 
 ## Setup
@@ -30,12 +28,6 @@ gcp_project="${GCP_PROJECT}"
 EOF
 
 ```
-
-## Model Access
-
-FYI -- they are not kidding around with this tutorial step: [Get access to the model](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway#model-access). I glossed over this and took a while to find the helpful error messages to this effect 
-when things weren't coming up cleanly.  Meta's acceptance of your application might take a while, so plan accordingly.
-
 
 ## Applying the Infra Config
 
@@ -68,7 +60,7 @@ curl -X POST "http://localhost:8000/v1/completions" \
 	-H "Content-Type: application/json" --data @- <<EOF
 	{
 		"model": "${MODEL}",
-		"prompt": "Once upon a time",
+		"prompt": "Once upon a time, there",
 		"max_tokens": 512,
 		"temperature": 0.5
 	}

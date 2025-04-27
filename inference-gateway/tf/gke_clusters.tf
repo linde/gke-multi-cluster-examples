@@ -26,9 +26,32 @@ resource "google_container_cluster" "worker" {
     channel = var.cluster_release_channel
   }
 
+  cluster_autoscaling {
+    auto_provisioning_defaults {
+      service_account = google_service_account.worker.email
+    }
+  }
+
   depends_on = [
     time_sleep.post_services_wait
   ]
 
   deletion_protection = false
+}
+
+
+// need to create a proxy subnet in the same subnet and region as our cluster subnet for the gateway
+
+data "google_compute_subnetwork" "worker_subnet" {
+  self_link = "https://www.googleapis.com/compute/v1/${google_container_cluster.worker.subnetwork}"
+}
+
+resource "google_compute_subnetwork" "proxy" {
+  project       = data.google_compute_subnetwork.worker_subnet.project
+  region        = data.google_compute_subnetwork.worker_subnet.region
+  network       = data.google_compute_subnetwork.worker_subnet.network
+  name          = "${local.cluster_app}-proxy-subnet"
+  ip_cidr_range = "10.3.0.0/22" 
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
 }

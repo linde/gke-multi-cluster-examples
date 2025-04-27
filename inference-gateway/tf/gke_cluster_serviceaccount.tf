@@ -1,0 +1,22 @@
+
+
+resource "google_service_account" "worker" {
+
+  project      = var.gcp_project
+  account_id   = "${local.cluster_app}-sa"
+  display_name = "Service Account for the ${local.cluster_app} cluster"
+
+}
+
+resource "google_project_iam_member" "worker_sa" {
+
+  for_each = toset([
+    "roles/container.defaultNodeServiceAccount",
+    "roles/monitoring.metricWriter",
+    "roles/artifactregistry.reader",
+    "roles/compute.networkUser",
+  ])
+  role    = each.value
+  project = var.gcp_project
+  member  = "serviceAccount:${google_service_account.worker.email}"
+}

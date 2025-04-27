@@ -12,7 +12,7 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: ig-route
+  name: {{ .Values.app }}
 spec:
   parentRefs:
   - name: {{ .Values.app }}

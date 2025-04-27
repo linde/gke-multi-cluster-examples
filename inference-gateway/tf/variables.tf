@@ -31,9 +31,9 @@ variable "cluster_min_master_version" {
 }
 
 variable "model" {
-  type = string
+  type    = string
   default = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-  
+
 }
 
 // not really a var but helpful
