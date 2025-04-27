@@ -1,4 +1,4 @@
 apiVersion: v2
 name: inference-workload
-version: 0.0.22
+version: 0.0.24
 type: application
