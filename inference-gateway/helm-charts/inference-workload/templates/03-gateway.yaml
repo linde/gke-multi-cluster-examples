@@ -22,7 +22,7 @@ spec:
         type: PathPrefix
         value: /serve
     backendRefs:
-    - name: vllm-llama3-8b-instruct
+    - name: {{ .Values.app }}
       group: inference.networking.x-k8s.io
       kind: InferencePool
 ---

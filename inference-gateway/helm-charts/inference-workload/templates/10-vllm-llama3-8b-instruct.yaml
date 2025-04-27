@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vllm-llama3-8b-instruct
+  name: {{ .Values.app }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vllm-llama3-8b-instruct
+      app: {{ .Values.app }}
   template:
     metadata:
       labels:
-        app: vllm-llama3-8b-instruct
+        app: {{ .Values.app }}
     spec:
       containers:
         - name: vllm
@@ -18,7 +18,7 @@ spec:
           imagePullPolicy: Always
           command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
           args: [
-            "--model", "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+            "--model", {{ .Values.model | quote }},
             "--port", "8000",
           ]
           env:
@@ -86,13 +86,13 @@ spec:
 kind: HealthCheckPolicy
 apiVersion: networking.gke.io/v1
 metadata:
-  name: health-check-policy
+  name: {{ .Values.app }}-policy
   namespace: default
 spec:
   targetRef:
     group: "inference.networking.x-k8s.io"
     kind: InferencePool
-    name: vllm-llama3-8b-instruct
+    name: {{ .Values.app }}
   default:
     config:
       type: HTTP

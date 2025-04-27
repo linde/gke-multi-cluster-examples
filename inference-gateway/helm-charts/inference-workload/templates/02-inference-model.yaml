@@ -6,7 +6,7 @@ spec:
   modelName: food-review
   criticality: Standard
   poolRef:
-    name: vllm-llama3-8b-instruct
+    name: {{ .Values.app }}
   targetModels:
   - name: food-review
     weight: 100
@@ -17,7 +17,7 @@ kind: InferenceModel
 metadata:
   name: llama3-base-model
 spec:
-  modelName: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  modelName: {{ .Values.model | quote }}
   criticality: Critical
   poolRef:
-    name: vllm-llama3-8b-instruct
+    name: {{ .Values.app }}

@@ -20,8 +20,7 @@ resource "helm_release" "inferencepool" {
 
   set {
     name = "inferencePool.modelServers.matchLabels.app"
-    # value = "vllm-llama3-8b-instruct"
-    value = ""
+    value = local.cluster_app
   }
 
   set {
@@ -37,6 +36,16 @@ resource "helm_release" "inference_workload" {
   chart = "${var.helm_chart_root}/inference-workload"
 
   wait = false
+
+  set {
+    name = "app"
+    value = local.cluster_app
+  }
+
+  set {
+    name = "model"
+    value = var.model
+  }
 
   depends_on = [ helm_release.inference_crds, helm_release.inferencepool ]
 }

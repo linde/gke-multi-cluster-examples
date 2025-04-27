@@ -53,20 +53,28 @@ terraform apply
 WORKER_PROJ=$(echo google_container_cluster.worker.project  | terraform console | tr -d '"')
 WORKER_NAME=$(echo google_container_cluster.worker.name  | terraform console | tr -d '"')
 WORKER_LOC=$(echo google_container_cluster.worker.location  | terraform console | tr -d '"')
+APP=$(echo local.cluster_app  | terraform console | tr -d '"')
+MODEL=$(echo var.model  | terraform console | tr -d '"')
+
 gcloud container clusters get-credentials --project=${WORKER_PROJ} --location=${WORKER_LOC} ${WORKER_NAME}
 
 
 # wait quite a little while for things to get ready
-kubectl wait --for=condition=Ready deployment/vllm-llama3-8b-instruct --timeout=20m
+kubectl wait --for=jsonpath='.status.conditions[].type=Available' deployments/${APP}
 
-kubectl port-forward deployments/vllm-llama3-8b-instruct 8000 &
+kubectl port-forward deployments/${APP} 8000 &
 
 curl -X POST "http://localhost:8000/v1/completions" \
-	-H "Content-Type: application/json" \
-	--data '{
-		"model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-		"prompt": "Once upon a time,",
+	-H "Content-Type: application/json" --data @- <<EOF
+	{
+		"model": "${MODEL}",
+		"prompt": "Once upon a time",
 		"max_tokens": 512,
 		"temperature": 0.5
-	}'
+	}
+EOF
+
+	
+	
+	
 ```

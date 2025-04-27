@@ -4,7 +4,7 @@ resource "google_container_cluster" "worker" {
 
   project  = var.gcp_project
   location = var.worker_location
-  name     = "${var.worker_prefix}-${random_id.rand.hex}"
+  name     = local.cluster_app
 
   enable_autopilot = true
 

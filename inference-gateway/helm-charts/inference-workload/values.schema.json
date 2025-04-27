@@ -2,6 +2,13 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "properties": {    
     "hf_token": {
+      "app" : {
+        "type" : "string"
+      },
+      "model" : {
+        "type" : "string"
+      }
+
     }
   }
 }
