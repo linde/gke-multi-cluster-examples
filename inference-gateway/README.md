@@ -2,7 +2,7 @@
 
 # Deploying Inference Gateway (in terraform)
 
-I was working from [Serve an LLM with GKE Inference Gateway](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway), but modified it some because i didnt want to consume the large GPU instances required to run with the original model and LoRA fine tuning. So, I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on smaller instances with lower memory requirements. The result is equivalent to the original tutorial, minus only the [LoRA adaptors](https://cloud.google.com/kubernetes-engine/docs/how-to/deploy-gke-inference-gateway#specify-model-objectives) and model routing based on it (ie based model and lora fine tuned models, respectively).
+I was working from [Serve an LLM with GKE Inference Gateway](https://cloud.google.com/kubernetes-engine/docs/tutorials/serve-with-gke-inference-gateway), but modified it some because i didnt want to consume the large GPU instances required to run with the original model and LoRA fine tuning. So, I switched it instead to use [TinyLlama/TinyLlama-1.1B-Chat-v1.0](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0) and run on smaller instances with lower memory requirements. The result hallucinates a lot, but is equivalent to the original tutorial with respect to Inference Gateway, minus only the [LoRA adaptors](https://cloud.google.com/kubernetes-engine/docs/how-to/deploy-gke-inference-gateway#specify-model-objectives) and model routing based on it (ie based model and lora fine tuned models, respectively).
 
 
 ## Setup
