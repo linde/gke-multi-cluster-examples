@@ -42,3 +42,5 @@ gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=$
 kubectl get pods -o json | jq '.items[].spec.nodeName' | uniq -c | sort -rn
 
 ```
+
+TODO: add an HPA and scale up

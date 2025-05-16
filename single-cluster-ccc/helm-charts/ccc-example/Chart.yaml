@@ -1,4 +1,4 @@
 apiVersion: v2
 name: ccc-example
-version: 0.0.10
+version: 0.0.15
 type: application
