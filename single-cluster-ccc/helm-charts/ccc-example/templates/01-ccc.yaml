@@ -1,0 +1,16 @@
+apiVersion: cloud.google.com/v1
+kind: ComputeClass
+metadata:
+  name: economy-compute-class
+spec:
+  nodePoolAutoCreation:
+    enabled: true
+  priorities:
+    # start with n2 but then after a few, go to e
+    - machineType: "n2-standard-2"
+      count: 3
+    - machineType: "e2-standard-2"
+  autoscalingPolicy:
+    consolidationDelayMinutes: 1
+  activeMigration:
+    optimizeRulePriority: true
