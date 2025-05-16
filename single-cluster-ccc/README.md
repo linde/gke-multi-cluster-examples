@@ -41,6 +41,9 @@ gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=$
 # see the pods spread to different nodes
 kubectl get pods -o json | jq '.items[].spec.nodeName' | uniq -c | sort -rn
 
+# once the nodes scale up, see the distribution matches the ccc
+kubectl get nodes -ojson | jq '.items[].metadata.labels["beta.kubernetes.io/instance-type"]'  | uniq -c
+
 ```
 
 TODO: add an HPA and scale up
