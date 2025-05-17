@@ -6,9 +6,9 @@ spec:
   nodePoolAutoCreation:
     enabled: true
   priorities:
-    # start with n2 but then after a few, go to e
+    # start with n2 if spot is available, then go to e
     - machineType: "n2-standard-2"
-      count: 3
+      spot: true
     - machineType: "e2-standard-2"
   autoscalingPolicy:
     consolidationDelayMinutes: 1
