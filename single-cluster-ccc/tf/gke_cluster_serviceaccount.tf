@@ -20,3 +20,14 @@ resource "google_project_iam_member" "worker_sa" {
   project = var.gcp_project
   member  = "serviceAccount:${google_service_account.worker.email}"
 }
+
+
+data "google_project" "cluster_project" {
+  project_id = var.gcp_project
+}
+
+resource "google_project_iam_member" "metrics_ksa" {
+  role    = "roles/monitoring.viewer"
+  project = var.gcp_project
+  member  = "principal://iam.googleapis.com/projects/${data.google_project.cluster_project.number}/locations/global/workloadIdentityPools/${var.gcp_project}.svc.id.goog/subject/ns/custom-metrics/sa/custom-metrics-stackdriver-adapter"
+}

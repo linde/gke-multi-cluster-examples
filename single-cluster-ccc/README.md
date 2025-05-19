@@ -37,6 +37,17 @@ CLUSTER_LOC=$(echo google_container_cluster.primary_cluster.location  | terrafor
 
 gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=${CLUSTER_LOC} ${CLUSTER_NAME}
 
+kubectl get pods,nodes
+```
+
+## Generate some load and see it scale out
+
+```bash
+# proxy to the clusters service and generate some load
+kubectl port-forward services/webapp-service 8080:8080 
+# in a different terminal
+hey -n 10000 -c 75  http://localhost:8080/sleep/5 
+
 
 # see the pods spread to different nodes
 kubectl get pods -o json | jq '.items[].spec.nodeName' | uniq -c | sort -rn
@@ -46,4 +57,3 @@ kubectl get nodes -ojson | jq '.items[].metadata.labels["beta.kubernetes.io/inst
 
 ```
 
-TODO: add an HPA and scale up

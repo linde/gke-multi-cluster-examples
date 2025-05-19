@@ -1,0 +1,14 @@
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: webapp-podmonitor
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  endpoints:
+  - port: webapp
+    path: /metrics
+    interval: 10s
+---
