@@ -2,8 +2,9 @@
 
 # Example project with CCC and a workload using it
 
-While not strictly a multi-cluster example, Custom Compute Class is very useful 
-and comes up in platform conversations, so this example might be of interest.
+While not strictly a multi-cluster example, Custom Compute Class and HPA are 
+very useful and come up in platform conversations, so this example might be
+of interest.
 
 
 ## Setup
