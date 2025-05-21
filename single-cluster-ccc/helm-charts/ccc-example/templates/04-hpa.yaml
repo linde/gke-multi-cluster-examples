@@ -14,7 +14,8 @@ spec:
   - type: Pods
     pods:
       metric:
-        name: prometheus.googleapis.com|bump_current|gauge
+        # name: prometheus.googleapis.com|bump_current|gauge
+        name: prometheus.googleapis.com|process_open_fds|gauge
       target:
         type: AverageValue
         averageValue: 5
