@@ -14,10 +14,10 @@ spec:
   - type: Pods
     pods:
       metric:
-        name: prometheus.googleapis.com|process_open_fds|gauge
+        name: prometheus.googleapis.com|bump_current|gauge
       target:
         type: AverageValue
-        averageValue: 10
+        averageValue: 5
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 0
