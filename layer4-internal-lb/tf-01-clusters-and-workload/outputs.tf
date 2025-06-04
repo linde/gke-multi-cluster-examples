@@ -3,8 +3,8 @@ output "gcp_project" {
   value = var.gcp_project
 }
 
-output "worker_location" {
-  value = var.worker_location
+output "worker_locations" {
+  value = var.cluster_locations
 }
 
 output "cluster_name" {
@@ -23,10 +23,12 @@ output "neg_name" {
   value = local.neg_name
 }
 
+
+# both west and east are using default/default, so just pick one for this
 output "network" {
-  value = google_container_cluster.cluster.network
+  value = local.cluster_west.network
 }
 
 output "subnetwork" {
-  value = google_container_cluster.cluster.subnetwork
+  value = local.cluster_west.subnetwork
 }

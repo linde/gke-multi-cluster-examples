@@ -2,8 +2,10 @@
 
 resource "google_container_cluster" "cluster" {
 
+  for_each = toset(var.cluster_locations)
+
   project  = var.gcp_project
-  location = var.worker_location
+  location = each.value
   name     = local.cluster_name
 
   enable_autopilot = true
