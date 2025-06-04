@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2.4-alpine
+        ports:
+        - name: redis-port
+          containerPort: {{ .Values.redisPort }}          
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: redis
+  annotations:
+    networking.gke.io/load-balancer-type: "Internal"
+    cloud.google.com/neg: '{"exposed_ports": { {{ .Values.redisPort | quote}}:{"name": {{ quote .Values.negName }} }}}'
+
+spec:
+  type: ClusterIP
+  selector:
+    app: redis 
+  ports:
+    - name: tcp-redis-port
+      protocol: TCP
+      targetPort: redis-port 
+      port: {{ .Values.redisPort }}

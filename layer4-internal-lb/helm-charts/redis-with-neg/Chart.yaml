@@ -1,0 +1,4 @@
+apiVersion: v2
+name: redis
+version: 0.0.27
+type: application
