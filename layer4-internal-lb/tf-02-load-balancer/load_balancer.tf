@@ -9,6 +9,20 @@ resource "google_compute_subnetwork" "proxy_subnet" {
   purpose       = "REGIONAL_MANAGED_PROXY"
 }
 
+resource "google_compute_firewall" "allow_proxy_to_backends" {
+  project                 = local.gcp_project
+  name                    = "${local.cluster_name}-policy-for-proxy"
+  network                 = local.cluster_network
+  direction               = "INGRESS"
+  source_ranges           = [ google_compute_subnetwork.proxy_subnet.ip_cidr_range ]
+  target_service_accounts = [ local.cluster_serviceaccount ]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["${local.redis_port}"]
+  }
+}
+
 resource "google_compute_region_health_check" "redis_health_check" {
 
   project = local.gcp_project
@@ -54,7 +68,7 @@ resource "google_compute_region_backend_service" "redis" {
   // TODO session_affinity      = "CLIENT_IP"
 
   dynamic "backend" {
-    for_each = toset( var.neg_zone_suffices )
+    for_each = toset(var.neg_zone_suffices)
     content {
       group                        = "projects/${local.gcp_project}/zones/${local.worker_location}-${backend.value}/networkEndpointGroups/${local.neg_name}"
       balancing_mode               = "CONNECTION"

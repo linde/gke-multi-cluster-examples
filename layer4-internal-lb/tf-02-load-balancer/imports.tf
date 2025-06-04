@@ -13,8 +13,9 @@ locals {
   redis_port      = data.terraform_remote_state.project_level.outputs.redis_port
   neg_name        = data.terraform_remote_state.project_level.outputs.neg_name
 
-  cluster_network    = data.terraform_remote_state.project_level.outputs.network
-  cluster_subnetwork = data.terraform_remote_state.project_level.outputs.subnetwork
+  cluster_network        = data.terraform_remote_state.project_level.outputs.network
+  cluster_subnetwork     = data.terraform_remote_state.project_level.outputs.subnetwork
+  cluster_serviceaccount = data.terraform_remote_state.project_level.outputs.cluster_serviceaccount
 }
 
 

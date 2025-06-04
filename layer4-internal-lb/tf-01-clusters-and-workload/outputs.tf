@@ -11,6 +11,10 @@ output "cluster_name" {
   value = local.cluster_name
 }
 
+output "cluster_serviceaccount" {
+  value = google_service_account.cluster_sa.email
+}
+
 output "redis_port" {
   value = var.redis_port
 }
