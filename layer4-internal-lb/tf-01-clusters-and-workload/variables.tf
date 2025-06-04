@@ -5,7 +5,7 @@ variable "gcp_project" {
 
 variable "worker_prefix" {
   type    = string
-  default = "ccc"
+  default = "l4ilb"
 }
 
 variable "worker_location" {

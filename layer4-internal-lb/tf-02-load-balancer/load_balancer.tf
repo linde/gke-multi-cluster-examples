@@ -54,7 +54,7 @@ resource "google_compute_region_backend_service" "redis" {
   // TODO session_affinity      = "CLIENT_IP"
 
   dynamic "backend" {
-    for_each = toset(["b", "c"])
+    for_each = toset( var.neg_zone_suffices )
     content {
       group                        = "projects/${local.gcp_project}/zones/${local.worker_location}-${backend.value}/networkEndpointGroups/${local.neg_name}"
       balancing_mode               = "CONNECTION"
