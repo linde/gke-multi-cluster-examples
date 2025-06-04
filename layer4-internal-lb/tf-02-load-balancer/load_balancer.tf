@@ -70,7 +70,7 @@ resource "google_compute_region_backend_service" "redis" {
   dynamic "backend" {
     for_each = toset(var.neg_zone_suffices)
     content {
-      group                        = "projects/${local.gcp_project}/zones/${local.worker_location}-${backend.value}/networkEndpointGroups/${local.neg_name}"
+      group                        = "projects/${local.gcp_project}/zones/${backend.value}/networkEndpointGroups/${local.neg_name}"
       balancing_mode               = "CONNECTION"
       max_connections_per_endpoint = 100
       capacity_scaler              = 1.0

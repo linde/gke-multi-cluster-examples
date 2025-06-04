@@ -32,7 +32,8 @@ EOF
 
 ## Part 1: Set up the clusters and their workload 
 
-This first part sets up the clusters and their workload (in this case, Redis). The workload has a service that has NEG names manually applied so we can grab them and use them in the next setion where we set up a loadbalancer and all its dependancies.
+This first part sets up the clusters and their workload (in this case, Redis). The workload has a service that has NEG 
+names manually applied so we can grab them and use them in the next setion where we set up a loadbalancer and all its dependancies.
 
 
 ```bash
@@ -54,15 +55,8 @@ gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=$
 
 kubectl get pod,service
 
-# figure out which zone(s) have the NEGs for our workload's service:
-
-kubectl  get service redis-service  -ojson  |
-    jq -r '.metadata.annotations["cloud.google.com/neg-status"]' |
-    jq .zones
 
 ```
-
-Keep the output from these commands because we will want to apply it into step 2. But first, lets confirm things are working well within the cluster.
 
 ## Verify the Redis works within the cluster
 
@@ -78,12 +72,19 @@ This should reply `+PONG`.
 
 ## Step 2: Create the load balancer and dependancies
 
+To do this, we need to supply an array of the k8s managed NEGs for the backend. We do this by querying the 
+k8s Service and getting its annotation with NEG details and saving it as a input variable.
+
 ```bash
 
 # update the list of zone suffices from above
 cd ../tf-02-load-balancer/
 
 # set the correct neg_zone_suffices into a terraform.tfvars file
+NEG_ZONES=$(kubectl get service redis-service -ojson | jq -r '.metadata.annotations["cloud.google.com/neg-status"]' |  jq -c  .zones)
+cat <<EOF > terraform.tfvars
+neg_zone_suffices = ${NEG_ZONES}
+EOF
 
 terraform init
 terraform plan
@@ -95,13 +96,21 @@ terraform apply
 
 ```bash
 
-kubectl run -it  --image=debian -- bash
+# first, grab the IP and port address of the load balancer
 
-# within the k8s cluster
+echo google_compute_address.internal_lb_ip.address | terraform console
+echo local.redis_port | terraform console
+
+
+# then start a container we can re-attach to
+kubectl run --image=debian sleepy -- /bin/bash -c "sleep infinity"
+
+kubectl exec sleepy -it -- bash
+# and within that bash prompt in the cluster so we can hit internal VIPs
 apt update
 apt install netcat-traditional
 
-echo PING | nc -q1 [LB IP] [redis port]
+echo PING | nc -q1 [load balancer IP] [load balancer port]
 [ctrl-D]
 ```
 
