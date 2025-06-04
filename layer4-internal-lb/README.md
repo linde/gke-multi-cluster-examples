@@ -96,7 +96,6 @@ COMBINED_NEG_ZONES=$(
 )
 
 cat <<EOF > terraform.tfvars
-neg_zone_suffices = ${WEST_NEG_ZONES}
 combined_neg_zones = ${COMBINED_NEG_ZONES}
 EOF
 
