@@ -6,7 +6,7 @@ resource "helm_release" "redis_west" {
   name  = "redis"
   chart = "${var.helm_chart_root}/redis-with-neg"
 
-  wait = false
+  wait = true
 
   set {
     name  = "negName"

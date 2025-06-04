@@ -37,16 +37,17 @@ resource "google_compute_health_check" "redis_health_check_gbl" {
   depends_on = [google_gke_hub_feature.mcs]
 }
 
-
 resource "google_compute_backend_service" "redis_backend_gbl" {
 
   project               = local.gcp_project
-  name                  = "${local.cluster_name}-backend-svc" # TODO add name gbl
+  name                  = "${local.cluster_name}-backend-gbl"
   protocol              = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
   health_checks         = [google_compute_health_check.redis_health_check_gbl.id]
   session_affinity      = "CLIENT_IP" # not required, but a good idea for something like redis
 
+  # in a nutshell, this is the "interesting" part of this exploration
+  # re-using the kubernetes managed NEGs from our clusters' services
   dynamic "backend" {
     for_each = toset(var.combined_neg_zones)
     content {

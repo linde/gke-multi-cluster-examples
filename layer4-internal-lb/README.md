@@ -1,5 +1,4 @@
 
-
 # Example cluster with a L4 load balancer using GKE service-managed NEGs.
 
 This is an exploration that I did after I realized that MCS doesnt currently
@@ -44,39 +43,30 @@ terraform init
 terraform plan
 terraform approve
 
+# get coffee ... time passes ...
 
-# now grab credentials to explore the workload and its service
-
+# grab credentials to explore the workload and its service
 CLUSTER_PROJ=$(echo var.gcp_project  | terraform console | tr -d '"')
 
-CLUSTER_WEST_NAME=$(echo local.cluster_west.name  | terraform console | tr -d '"')
-CLUSTER_WEST_LOC=$(echo local.cluster_west.location  | terraform console | tr -d '"')
+# and/or use local.cluster_east as desired
+CLUSTER_NAME=$(echo local.cluster_west.name  | terraform console | tr -d '"')
+CLUSTER_LOC=$(echo local.cluster_west.location  | terraform console | tr -d '"')
 
-CLUSTER_EAST_NAME=$(echo local.cluster_east.name  | terraform console | tr -d '"')
-CLUSTER_EAST_LOC=$(echo local.cluster_east.location  | terraform console | tr -d '"')
+gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=${CLUSTER_LOC} ${CLUSTER_NAME}
 
-
-gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=${CLUSTER_WEST_LOC} ${CLUSTER_WEST_NAME}
-kubectl config rename-context gke_${CLUSTER_PROJ}_${CLUSTER_WEST_LOC}_${CLUSTER_WEST_NAME} w
-
-gcloud container clusters get-credentials --project=${CLUSTER_PROJ} --location=${CLUSTER_EAST_LOC} ${CLUSTER_EAST_NAME}
-kubectl config rename-context gke_${CLUSTER_PROJ}_${CLUSTER_EAST_LOC}_${CLUSTER_EAST_NAME} e
-
-
-kubectl --context=w get pod,service
+kubectl get pod,service
 
 ```
 
 ## Verify the Redis works within the cluster
 
 ```bash
-kubectl --context=w  port-forward services/redis-service 6379:6379 
+kubectl port-forward services/redis-service 6379:6379 
 
 # then from another terminal
 
 echo PING | nc -q1 localhost 6379
 ```
-
 This should reply `+PONG`.
 
 ## Step 2: Create the load balancer and dependancies
@@ -111,20 +101,19 @@ terraform apply
 
 # first, grab the IP and port address of the load balancer
 
-echo google_compute_address.internal_lb_ip.address | terraform console
+echo google_compute_address.internal_lb_ip_xreg.address | terraform console
 echo local.redis_port | terraform console
 
 
-# then start a container we can re-attach to across sessions, as helpful
-kubectl --context w run --image=debian sleepy -- /bin/bash -c "sleep infinity"
-# here is how we reattach
-kubectl --context w exec sleepy -it -- bash
+# since this was internal, lets just use a shell on one of the clusters to verify connectivity
+kubectl run -it --image=debian bash -- /bin/bash 
 
 # and within the cluster via that bash prompt, use nc to do our L4 check of the VIP
 apt update
 apt install netcat-traditional
 
 echo PING | nc -q1 [load balancer IP] [load balancer port]
+# it should reply: +PONG
 [ctrl-D]
 ```
 
