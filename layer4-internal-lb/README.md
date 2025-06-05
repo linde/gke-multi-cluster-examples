@@ -52,10 +52,10 @@ terraform approve
 
 # get coffee ... time passes ...
 
-# grab credentials to explore the workload and its service
-CLUSTER_PROJ=$(echo var.gcp_project  | terraform console | tr -d '"')
+# once the terraform applies and the deployments are running, grab credentials to explore the
+# workload and its service. we use the cluster in the west region but either works
 
-# and/or use local.cluster_east as desired
+CLUSTER_PROJ=$(echo var.gcp_project  | terraform console | tr -d '"')
 CLUSTER_NAME=$(echo local.cluster_west.name  | terraform console | tr -d '"')
 CLUSTER_LOC=$(echo local.cluster_west.location  | terraform console | tr -d '"')
 
