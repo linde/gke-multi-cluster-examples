@@ -5,8 +5,15 @@ This is an exploration that I did after I realized that MCS doesnt currently
 work with L4. So, I wanted to learn what goes into managing a backend and
 referncing GKE managed NEGs for a Service.
 
-Currently, it just has one cluster, but i will soon put layer in clusters in
-more than one region.
+The setup has two clusters in respective regions and runs a workload fronted by
+a Kubernetes Service. This service has annotations which cause GCP to manage 
+[Network Endpoint Groups (or NEGs)](https://cloud.google.com/load-balancing/docs/negs)
+bound to the service's pods in each region where the workload ends up deployed.
+
+The "interesting" part here is scraping those NEGs and using them in a backend for
+a cross regional load balancer. In this case, I create an internal one but you can
+definitely use this for a cross region, multi-cluster L4 load balancer (with the caveat
+that you need to collect the NEGs and reapply any time you app changes or scales.
 
 ## Setup
 
