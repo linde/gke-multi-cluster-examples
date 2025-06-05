@@ -78,16 +78,14 @@ This should reply `+PONG`.
 
 ## Step 2: Create the load balancer and dependancies
 
-To do this, we need to supply an array of the k8s managed NEGs for the backend. We do this by querying the 
-k8s Service and getting its annotation with NEG details and saving it as a input variable.
+To create the load balancer, we start by getting the set of k8s managed NEGs for the backend. We get these 
+via `gcloud`, then reformat their resource self-links to match what's expected for the backend terraform resource
 
 ```bash
-
-# update the list of zone suffices from above
 cd ../tf-02-load-balancer/
 
-# set the correct neg_zone_suffices into a terraform.tfvars file. 
-# FYI this expects and dedicated project, it gathers *all* NEGS.
+# set the combined_neg_zones into a terraform.tfvars file. 
+# FYI this collects *all* NEGs for a project, additional care might be needed if you're using this in a project with other services
 COMBINED_NEG_ZONES=$(
     gcloud compute network-endpoint-groups list  --project ${CLUSTER_PROJ}  --format=json | jq '.[].selfLink | sub("^.*/v1/"; "")' | jq . -sc
 )
@@ -111,11 +109,10 @@ terraform apply
 echo google_compute_address.internal_lb_ip_xreg.address | terraform console
 echo local.redis_port | terraform console
 
-
-# since this was internal, lets just use a shell on one of the clusters to verify connectivity
+# since this was internal, lets just use a shell within one of the clusters to verify connectivity
 kubectl run -it --image=debian bash -- /bin/bash 
 
-# and within the cluster via that bash prompt, use nc to do our L4 check of the VIP
+# within the cluster, install and use netcat (ie nc) to do our L4 check of the VIP
 apt update
 apt install netcat-traditional
 
