@@ -1,9 +1,12 @@
 
 # Example cluster with a L4 load balancer using GKE service-managed NEGs.
 
-This is an exploration that I did after I realized that MCS doesnt currently
-work with L4. So, I wanted to learn what goes into managing a backend and
-referncing GKE managed NEGs for a Service.
+Ultimately, this project is just a terraform port of the GKE doc, [feedbackContainer-
+native load balancing through standalone zonal NEGs](https://cloud.google.com/kubernetes-engine/docs/how-to/standalone-neg).
+It came about when I was surprised to learn that GKE Multi-cluster
+Gateway/Service doesn't currently work with L4 services; it assumes L7 http application
+load balancing.  Because I was surprised by that, I wanted to learn what goes  into managing 
+a backend and referncing GKE managed NEGs for a Service.
 
 The setup has two clusters in respective regions and runs a workload fronted by
 a Kubernetes Service. This service has annotations which cause GCP to manage 
