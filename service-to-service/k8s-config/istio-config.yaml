@@ -1,0 +1,62 @@
+--- 
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: gateway
+spec:
+  selector:
+    istio: ingressgateway 
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: webapp-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: webapp-service
+        port:
+          number: 8080
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: httpbin-vs
+spec:
+  hosts:
+  - "httpbin.example.com"
+  gateways:
+  - gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: httpbin
+        port:
+          number: 8080
+

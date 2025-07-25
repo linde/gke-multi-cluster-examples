@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+        authn-requrire-jwt: "true"
+    spec:
+      containers:
+      - name: webapp-container
+        image: python:3.8-slim
+        args: ['sh', '-c', 'cd /mnt; pip -q install Flask requests; flask run --host=0.0.0.0 --port=${PORT}']
+        ports:
+        - name: webapp
+          containerPort: 8080
+        env:
+        - name: "PORT"
+          value: "8080"
+        volumeMounts:
+        - name: webapp-config
+          mountPath: /mnt/
+      volumes:
+      - name: webapp-config
+        configMap:
+          name: webapp-configmap
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: webapp-service
+spec:
+  type: ClusterIP
+  selector:
+    app: webapp
+  ports:
+  - port: 8080
+    targetPort: 8080
+---

@@ -1,0 +1,31 @@
+apiVersion: security.istio.io/v1
+kind: RequestAuthentication
+metadata:
+  namespace: istio-system
+  name: test-jwt-authn
+spec:
+  selector:
+    matchLabels:
+      authn-requrire-jwt: "true"
+      # istio: ingressgateway
+  jwtRules:
+  - issuer: "testing@secure.istio.io"
+    jwksUri: "https://raw.githubusercontent.com/istio/istio/release-1.26/security/tools/jwt/samples/jwks.json"
+    forwardOriginalToken: true
+--- 
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  namespace: istio-system
+  name: require-jwt
+spec:
+  selector:
+    matchLabels:
+      authn-requrire-jwt: "true"
+      # istio: ingressgateway
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+       requestPrincipals: ["testing@secure.istio.io/testing@secure.istio.io"]
+---
